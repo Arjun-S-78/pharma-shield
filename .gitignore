@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Build outputs
+dist/
+build/
+client/dist/
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Database files & Environment files
+*.db
+*.sqlite
+*.sqlite3
+pharmashield-backend/pharmashield.db
+.env
+.env.*
+!.env.example
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
