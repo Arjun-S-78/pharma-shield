@@ -12,9 +12,13 @@ import {
   ShieldCheck, 
   MapPin, 
   Calendar, 
-  Building 
+  Building,
+  Truck,
+  Smartphone,
+  ExternalLink
 } from 'lucide-react';
 import { verifyQR } from '../services/api';
+import QRPassModal from '../components/QRPassModal';
 
 export default function QRVerification() {
   const [searchParams] = useSearchParams();
@@ -23,6 +27,7 @@ export default function QRVerification() {
   const [inputShipmentId, setInputShipmentId] = useState(initialShipmentId);
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState(null);
+  const [showQrModal, setShowQrModal] = useState(false);
   const [verificationsHistory, setVerificationsHistory] = useState([
     { shipment_id: 'PHARMA-001', verified_by: 'Inspector R. Kumar', timestamp: '10 mins ago', status: 'SAFE / COMPLIANT' },
     { shipment_id: 'PHARMA-003', verified_by: 'QA Tech S. Nair', timestamp: '1 hour ago', status: 'SAFE / COMPLIANT' },
@@ -167,13 +172,32 @@ export default function QRVerification() {
                 </div>
               </div>
 
-              <Link
-                to={`/shipments/${result.shipment_id}`}
-                className="px-4 py-2 bg-[#0A2647] text-white text-xs font-bold rounded-xl hover:bg-[#2C7BE5] transition-colors self-start md:self-auto flex items-center gap-1.5"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                <span>View Full Telemetry Details</span>
-              </Link>
+              <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+                <Link
+                  to={`/journey/${result.shipment_id}`}
+                  className="px-4 py-2 bg-[#2C7BE5] hover:bg-blue-600 text-white text-xs font-extrabold rounded-xl transition-all shadow-md flex items-center gap-1.5"
+                >
+                  <Truck className="w-3.5 h-3.5" />
+                  <span>View Entire Live Journey Pass</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+
+                <button
+                  onClick={() => setShowQrModal(true)}
+                  className="px-3 py-2 bg-white text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-100 transition-colors border border-slate-300 flex items-center gap-1.5 shadow-sm"
+                >
+                  <QrCode className="w-3.5 h-3.5 text-[#2C7BE5]" />
+                  <span>Show Mobile QR</span>
+                </button>
+
+                <Link
+                  to={`/shipments/${result.shipment_id}`}
+                  className="px-3 py-2 bg-slate-800 text-slate-200 text-xs font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center gap-1.5"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Telemetry Audit</span>
+                </Link>
+              </div>
             </div>
 
             {/* Compliance Check Summary */}
@@ -234,6 +258,16 @@ export default function QRVerification() {
           </div>
         </div>
       </main>
+
+      {/* Scannable Mobile QR Pass Modal */}
+      {result && (
+        <QRPassModal
+          isOpen={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          shipmentId={result.shipment_id}
+          productName={result.product_name}
+        />
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -11,7 +11,9 @@ import {
   QrCode, 
   Settings, 
   Shield, 
-  LogOut 
+  LogOut,
+  Menu,
+  X
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -27,17 +29,29 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar() {
-  return (
-    <aside className="w-64 bg-[#0A2647] text-slate-300 flex flex-col min-h-screen border-r border-slate-800 shadow-xl shrink-0">
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
       {/* Brand Header */}
-      <div className="p-5 flex items-center gap-3 border-b border-slate-800/80">
-        <div className="p-2.5 bg-gradient-to-tr from-[#2C7BE5] to-blue-400 rounded-xl shadow-lg shadow-blue-500/20 text-white">
-          <Shield className="w-6 h-6" />
+      <div className="p-5 flex items-center justify-between border-b border-slate-800/80">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gradient-to-tr from-[#2C7BE5] to-blue-400 rounded-xl shadow-lg shadow-blue-500/20 text-white">
+            <Shield className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="font-extrabold text-lg text-white tracking-tight leading-none">PharmaShield</h1>
+            <p className="text-[11px] text-blue-300 font-medium tracking-wide uppercase mt-1">IoT Cold Chain Trace</p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-extrabold text-lg text-white tracking-tight leading-none">PharmaShield</h1>
-          <p className="text-[11px] text-blue-300 font-medium tracking-wide uppercase mt-1">IoT Cold Chain Trace</p>
-        </div>
+
+        {/* Mobile close button */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Store & Forward Indicator Banner */}
@@ -57,6 +71,7 @@ export default function Sidebar() {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all group ${
                   isActive
@@ -98,6 +113,38 @@ export default function Sidebar() {
           </NavLink>
         </div>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Floating Toggle Menu Button */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="md:hidden fixed bottom-4 right-4 z-40 p-3.5 bg-[#0A2647] text-white rounded-full shadow-2xl border border-blue-500/40 hover:bg-[#2C7BE5] transition-all flex items-center gap-2"
+        aria-label="Open Navigation Menu"
+      >
+        <Menu className="w-5 h-5" />
+        <span className="text-xs font-bold pr-1">Menu</span>
+      </button>
+
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden md:flex w-64 bg-[#0A2647] text-slate-300 flex-col min-h-screen border-r border-slate-800 shadow-xl shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div 
+            className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside className="relative w-72 max-w-[85vw] bg-[#0A2647] text-slate-300 flex flex-col h-full shadow-2xl border-r border-slate-800">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

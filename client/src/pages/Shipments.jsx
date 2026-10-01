@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import StatusBadge from '../components/StatusBadge';
-import { Search, Filter, Eye, ChevronLeft, ChevronRight, Download, Plus } from 'lucide-react';
+import { Search, Filter, Eye, ChevronLeft, ChevronRight, Download, Plus, QrCode } from 'lucide-react';
 import { fetchShipments } from '../services/api';
+import QRPassModal from '../components/QRPassModal';
 
 export default function Shipments() {
   const [shipments, setShipments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedQrShipment, setSelectedQrShipment] = useState(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -112,13 +114,23 @@ export default function Shipments() {
                     <td className="py-3.5 px-4 font-mono text-slate-600">{s.current_humidity}%</td>
                     <td className="py-3.5 px-4 text-slate-400">{s.updated_at || "Just now"}</td>
                     <td className="py-3.5 px-4 text-right">
-                      <Link
-                        to={`/shipments/${s.shipment_id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C7BE5]/10 text-[#2C7BE5] hover:bg-[#2C7BE5] hover:text-white font-bold rounded-lg transition-all"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>View Details</span>
-                      </Link>
+                      <div className="inline-flex items-center gap-2">
+                        <button
+                          onClick={() => setSelectedQrShipment(s)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 text-[#2C7BE5] hover:bg-[#2C7BE5] hover:text-white font-bold rounded-lg transition-all border border-blue-200"
+                          title="Generate scannable QR Pass for mobile"
+                        >
+                          <QrCode className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">QR Pass</span>
+                        </button>
+                        <Link
+                          to={`/shipments/${s.shipment_id}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2C7BE5]/10 text-[#2C7BE5] hover:bg-[#2C7BE5] hover:text-white font-bold rounded-lg transition-all"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>View Details</span>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -150,6 +162,16 @@ export default function Shipments() {
           </div>
         </div>
       </main>
+
+      {/* Scannable Mobile QR Pass Modal */}
+      {selectedQrShipment && (
+        <QRPassModal
+          isOpen={!!selectedQrShipment}
+          onClose={() => setSelectedQrShipment(null)}
+          shipmentId={selectedQrShipment.shipment_id}
+          productName={selectedQrShipment.product_name}
+        />
+      )}
     </div>
   );
 }

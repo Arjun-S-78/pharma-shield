@@ -12,12 +12,14 @@ import Timeline from './pages/Timeline';
 import Reports from './pages/Reports';
 import QRVerification from './pages/QRVerification';
 import Settings from './pages/Settings';
+import JourneyPass from './pages/JourneyPass';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
+  const isPublicJourney = location.pathname.startsWith('/journey') || location.pathname.startsWith('/verify');
 
-  if (isLoginPage) {
+  if (isLoginPage || isPublicJourney) {
     return <>{children}</>;
   }
 
@@ -45,6 +47,8 @@ export default function App() {
           <Route path="/map" element={<MapView />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/journey/:id" element={<JourneyPass />} />
+          <Route path="/verify/:id" element={<JourneyPass />} />
           <Route path="/qr-verification" element={<QRVerification />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

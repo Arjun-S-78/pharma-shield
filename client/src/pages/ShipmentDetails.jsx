@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { fetchShipmentById } from '../services/api';
 import { MOCK_SENSOR_HISTORY } from '../services/mockData';
+import QRPassModal from '../components/QRPassModal';
+import { getPublicJourneyUrl } from '../services/qrConfig';
 
 export default function ShipmentDetails() {
   const { id } = useParams();
@@ -201,25 +203,12 @@ export default function ShipmentDetails() {
           </div>
 
           {/* QR Code Verification Section */}
-          <div className="bg-white rounded-xl p-6 border border-slate-200/80 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-3 bg-blue-50 rounded-2xl text-[#2C7BE5]">
-              <QrCode className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 text-sm">QR Inspection Pass</h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-xs">Scan using any device camera to verify cold chain custody & FDA compliance.</p>
-            </div>
-
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner">
-              <QRCodeSVG value={qrVerifyUrl} size={150} level="H" includeMargin={true} />
-            </div>
-
-            <Link
-              to={`/qr-verification?shipment=${shipment.shipment_id}`}
-              className="w-full py-2.5 bg-[#0A2647] hover:bg-[#2C7BE5] text-white font-bold rounded-xl text-xs transition-all shadow-md"
-            >
-              Scan to Verify Journey
-            </Link>
+          <div className="lg:col-span-1">
+            <QRPassModal
+              shipmentId={shipment.shipment_id}
+              productName={shipment.product_name}
+              isInline={true}
+            />
           </div>
         </div>
       </main>
